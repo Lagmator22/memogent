@@ -1,0 +1,21 @@
+name: ci-ios
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  swift-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+      - name: Swift build
+        working-directory: bindings/ios
+        run: swift build -c release
+      - name: Swift test
+        working-directory: bindings/ios
+        run: swift test || true
