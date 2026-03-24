@@ -1,0 +1,64 @@
+# ---------- C/C++ ----------
+build/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.pdb
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+.clangd/
+.cache/
+_deps/
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ---------- iOS / Swift ----------
+bindings/ios/.build/
+bindings/ios/.swiftpm/
+bindings/ios/DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+bindings/ios/**/XCFrameworks/
+
+# ---------- Android / Gradle / JNI ----------
+bindings/android/.gradle/
+bindings/android/build/
+bindings/android/.cxx/
+bindings/android/local.properties
+*.iml
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.swp
+
+# ---------- Runtime state ----------
+python/data/*.db
+python/data/*.db-*
+python/bench_results/
+bench/traces/*.tsv
+bench/traces/*.csv
+bench/traces/*.parquet
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
