@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      Memogent itself never goes to the network. These permissions are only
+      required if the host app opts into the UsageStatsSource helper — guarded
+      by the app-side permission flow, not granted by the library manifest.
+    -->
+</manifest>
