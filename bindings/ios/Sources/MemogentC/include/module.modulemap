@@ -1,0 +1,4 @@
+module MemogentC {
+    header "MemogentC.h"
+    export *
+}
