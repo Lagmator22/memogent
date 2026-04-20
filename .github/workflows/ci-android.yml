@@ -15,7 +15,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - name: Install NDK r26
         run: sdkmanager --install "ndk;26.1.10909125" "cmake;3.22.1"
       - name: Gradle assemble
