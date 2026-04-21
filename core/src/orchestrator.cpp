@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include <memogent/orchestrator.hpp>
 
+#include <memogent/clock.hpp>
 #include <memogent/logger.hpp>
 
 #include <chrono>

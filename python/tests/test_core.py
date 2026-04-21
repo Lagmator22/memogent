@@ -31,7 +31,7 @@ def test_cache_factories():
     for pol in ("lru", "lfu", "arc", "context_arc"):
         cfg = Config(cache_policy=pol)
         c = make_cache(cfg, 8)
-        assert c.policy_name.endswith(pol.replace("_", ""))
+        assert c.policy_name == pol
 
 
 def test_lru_eviction():

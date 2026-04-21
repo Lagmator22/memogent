@@ -15,6 +15,7 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <ctime>
 #include <deque>
 #include <limits>
 #include <unordered_map>
@@ -73,7 +74,7 @@ public:
     void observe(const AppEvent& ev) override {
         if (ev.type != EventType::AppOpen && ev.type != EventType::AppForeground)
             return;
-        seen_.insert(ev.app_id);
+        seen_[ev.app_id] = 1;
         history_.push_back(ev.app_id);
         if (history_.size() > kHistoryCap) history_.pop_front();
     }
