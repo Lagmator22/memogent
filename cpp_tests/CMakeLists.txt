@@ -7,4 +7,6 @@ target_link_libraries(memogent_tests PRIVATE
     memogent::core
     Catch2::Catch2WithMain)
 
-add_test(NAME memogent_tests COMMAND memogent_tests)
+list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
+include(Catch)
+catch_discover_tests(memogent_tests)
