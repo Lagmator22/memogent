@@ -29,7 +29,7 @@ public enum Memogent {
             case MEM_ERR_INVALID_ARGUMENT:
                 self = .invalidArgument("C ABI reported invalid argument")
             default:
-                self = .internalError(status: status.rawValue)
+                self = .internalError(status: Int32(status.rawValue))
             }
         }
     }
@@ -61,7 +61,7 @@ public enum Memogent {
         case other = 255
 
         fileprivate var c: mem_pool_t {
-            mem_pool_t(rawValue: UInt32(rawValue)) ?? MEM_POOL_OTHER
+            mem_pool_t(UInt32(rawValue))
         }
     }
 
@@ -123,12 +123,12 @@ public enum Memogent {
             _ = predictor.withCString { mem_config_set_string(cfg, "predictor", $0) }
             _ = cachePolicy.withCString { mem_config_set_string(cfg, "cache_policy", $0) }
 
-            var opaque: UnsafeMutablePointer<mem_orchestrator>? = nil
+            var opaque: OpaquePointer? = nil
             let status = mem_orchestrator_create(cfg, &opaque)
             guard status == MEM_OK, let ptr = opaque else {
                 throw Error(status: status)
             }
-            self.handle = OpaquePointer(ptr)
+            self.handle = ptr
         }
 
         deinit {
@@ -137,29 +137,29 @@ public enum Memogent {
                 NotificationCenter.default.removeObserver(obs)
             }
             #endif
-            mem_orchestrator_destroy(UnsafeMutablePointer(handle))
+            mem_orchestrator_destroy(handle)
         }
 
         // MARK: ingestion helpers
 
         public func recordAppOpen(appId: String) {
             _ = appId.withCString {
-                mem_orchestrator_record_app_open(UnsafeMutablePointer(handle), $0)
+                mem_orchestrator_record_app_open(handle, $0)
             }
         }
 
         public func recordAppClose(appId: String) {
             _ = appId.withCString {
-                mem_orchestrator_record_app_close(UnsafeMutablePointer(handle), $0)
+                mem_orchestrator_record_app_close(handle, $0)
             }
         }
 
         public func recordCacheHit(pool: MemoryPool) {
-            _ = mem_orchestrator_record_cache_hit(UnsafeMutablePointer(handle), pool.c)
+            _ = mem_orchestrator_record_cache_hit(handle, pool.c)
         }
 
         public func recordCacheMiss(pool: MemoryPool) {
-            _ = mem_orchestrator_record_cache_miss(UnsafeMutablePointer(handle), pool.c)
+            _ = mem_orchestrator_record_cache_miss(handle, pool.c)
         }
 
         // MARK: queries
@@ -168,7 +168,7 @@ public enum Memogent {
             let cap = max(1, min(k, 16))
             let buf = UnsafeMutablePointer<mem_prediction_t>.allocate(capacity: cap)
             defer { buf.deallocate() }
-            let n = mem_orchestrator_predict_next(UnsafeMutablePointer(handle), buf, cap)
+            let n = mem_orchestrator_predict_next(handle, buf, cap)
             var out = [Prediction]()
             out.reserveCapacity(Int(n))
             for i in 0..<Int(n) {
@@ -181,24 +181,24 @@ public enum Memogent {
         }
 
         public func powerMode() -> PowerMode {
-            PowerMode(mem_orchestrator_power_mode(UnsafeMutablePointer(handle)))
+            PowerMode(mem_orchestrator_power_mode(handle))
         }
 
         @discardableResult
         public func tick() -> Bool {
-            mem_orchestrator_tick(UnsafeMutablePointer(handle)) == MEM_OK
+            mem_orchestrator_tick(handle) == MEM_OK
         }
 
         public func kpis() -> KpiSnapshot {
-            KpiSnapshot(mem_orchestrator_kpis(UnsafeMutablePointer(handle)))
+            KpiSnapshot(mem_orchestrator_kpis(handle))
         }
 
         public func kpisJson() -> String {
-            String(cString: mem_orchestrator_kpis_json(UnsafeMutablePointer(handle)))
+            String(cString: mem_orchestrator_kpis_json(handle))
         }
 
         public func reset() {
-            _ = mem_orchestrator_reset(UnsafeMutablePointer(handle))
+            _ = mem_orchestrator_reset(handle)
         }
 
         // MARK: device state
@@ -216,7 +216,7 @@ public enum Memogent {
                 low_power_mode: lowPowerMode ? 1 : 0,
                 timestamp: Date().timeIntervalSince1970
             )
-            _ = mem_orchestrator_update_device_state(UnsafeMutablePointer(handle), &s)
+            _ = mem_orchestrator_update_device_state(handle, &s)
         }
 
         /// Wire ProcessInfo.thermalState and UIDevice battery into the arbiter.

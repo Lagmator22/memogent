@@ -28,7 +28,7 @@ from ..types import AppEvent, EventType
 # ---------------------------------------------------------------------------
 # Targets (Samsung brief)
 # ---------------------------------------------------------------------------
-@dataclass(slots=True)
+@dataclass
 class KpiTargets:
     app_load_time_improvement_pct: float = 20.0
     launch_time_improvement_pct: float = 10.0
@@ -109,7 +109,7 @@ def _eval_cache(events: List[AppEvent], cache_policy: str, cap: int,
 # ---------------------------------------------------------------------------
 # Full run
 # ---------------------------------------------------------------------------
-@dataclass(slots=True)
+@dataclass
 class HarnessReport:
     events: int = 0
     apps_seen: int = 0

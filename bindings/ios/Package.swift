@@ -31,11 +31,9 @@ let package = Package(
             publicHeadersPath: "include",
             cSettings: [
                 .headerSearchPath("include"),
-                .headerSearchPath("../../../core/include"),
             ],
             cxxSettings: [
                 .headerSearchPath("include"),
-                .headerSearchPath("../../../core/include"),
                 .define("MEM_BUILDING_SHARED", to: "1"),
             ]
         ),

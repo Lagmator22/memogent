@@ -8,7 +8,7 @@ from ..types import CacheStats
 from .base import AdaptiveCache
 
 
-@dataclass(slots=True)
+@dataclass
 class _Item:
     value: bytes
     freq: int

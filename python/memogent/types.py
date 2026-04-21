@@ -36,7 +36,7 @@ class ResourcePool(IntEnum):
     OTHER = 255
 
 
-@dataclass(slots=True)
+@dataclass
 class AppEvent:
     type: EventType = EventType.USER_INTERACTION
     app_id: str = ""
@@ -49,14 +49,14 @@ class AppEvent:
     location: Optional[str] = None
 
 
-@dataclass(slots=True)
+@dataclass
 class Prediction:
     app_id: str
     score: float = 0.0
     reason: str = ""
 
 
-@dataclass(slots=True)
+@dataclass
 class DeviceState:
     battery_pct: float = 100.0
     thermal: float = 0.25
@@ -66,7 +66,7 @@ class DeviceState:
     timestamp: float = 0.0
 
 
-@dataclass(slots=True)
+@dataclass
 class CacheStats:
     hits: int = 0
     misses: int = 0

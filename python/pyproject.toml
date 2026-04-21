@@ -6,8 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "memogent"
 version = "0.1.0"
 description = "Context-aware adaptive memory orchestrator — Python reference runtime"
-readme = "../README.md"
-requires-python = ">=3.10"
+readme = "README.md"
+
+requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "Lagmator22" }]
 keywords = ["on-device", "mobile", "memory", "cache", "predictor", "samsung", "ax-hackathon"]

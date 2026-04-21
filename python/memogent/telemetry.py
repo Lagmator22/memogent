@@ -10,7 +10,7 @@ from statistics import quantiles
 from typing import Dict, List
 
 
-@dataclass(slots=True)
+@dataclass
 class KpiSnapshot:
     app_load_time_ms_baseline: float = 0.0
     app_load_time_ms_current: float = 0.0
@@ -31,7 +31,7 @@ class KpiSnapshot:
     p99_decision_latency_ms: float = 0.0
 
 
-@dataclass(slots=True)
+@dataclass
 class Telemetry:
     baseline_app_load_ms: float = 0.0
     current_app_load_ms: float = 0.0

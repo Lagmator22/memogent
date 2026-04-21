@@ -42,7 +42,7 @@ def _classify(state: DeviceState, cfg: Config) -> PowerMode:
     return PowerMode.FULL
 
 
-@dataclass(slots=True)
+@dataclass
 class TickResult:
     plan: ArbiterPlan
     power_mode: PowerMode

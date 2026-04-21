@@ -8,7 +8,7 @@ from ..config import Config
 from ..types import CacheStats, DeviceState, PowerMode, Prediction
 
 
-@dataclass(slots=True)
+@dataclass
 class ArbiterInputs:
     device: DeviceState = field(default_factory=DeviceState)
     mode: PowerMode = PowerMode.FULL
@@ -21,7 +21,7 @@ class ArbiterInputs:
     kv_cache: CacheStats = field(default_factory=CacheStats)
 
 
-@dataclass(slots=True)
+@dataclass
 class ArbiterPlan:
     app_cache_capacity: int
     model_cache_capacity: int
