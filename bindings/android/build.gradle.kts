@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 plugins {
-    id("com.android.library") version "8.2.0"
+    id("com.android.library") version "9.1.1"
     id("org.jetbrains.kotlin.android") version "1.9.22"
     id("maven-publish")
 }
