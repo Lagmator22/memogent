@@ -10,11 +10,10 @@ import json
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from ..cache import make_cache
 from ..config import Config
-from ..orchestrator import Orchestrator
 from ..predictor import (
     FreqRecencyPredictor,
     MarkovPredictor,

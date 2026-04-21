@@ -97,8 +97,10 @@ class ARCCache(AdaptiveCache):
             self._evictions += 1
 
     def clear(self) -> None:
-        self._t1.clear(); self._t2.clear()
-        self._b1.clear(); self._b2.clear()
+        self._t1.clear()
+        self._t2.clear()
+        self._b1.clear()
+        self._b2.clear()
         self._p = 0
         self._hits = self._misses = self._evictions = 0
 

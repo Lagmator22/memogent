@@ -1,7 +1,6 @@
 """`mem` CLI entry."""
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 from typing import Optional
@@ -10,11 +9,10 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from ..bench import KpiTargets, run_harness
+from ..bench import run_harness
 from ..config import Config
 from ..datasets import generate_synthetic, load_lsapp_tsv
 from ..orchestrator import Orchestrator
-from ..types import EventType
 
 console = Console()
 
@@ -73,7 +71,8 @@ def _cmd_orchestrate(args) -> int:
     result = orch.tick()
     snap = orch.kpis()
     tbl = Table(title="post-replay snapshot")
-    tbl.add_column("field"); tbl.add_column("value")
+    tbl.add_column("field")
+    tbl.add_column("value")
     tbl.add_row("power_mode", result.power_mode.name)
     tbl.add_row("rationale", result.plan.rationale)
     tbl.add_row("cache hit_rate", f"{snap.cache_hit_rate:.3f}")
@@ -99,7 +98,10 @@ def _cmd_bench(args) -> int:
     out.write_text(report.to_json())
 
     tbl = Table(title="KPI report", show_lines=True)
-    tbl.add_column("metric"); tbl.add_column("value", justify="right"); tbl.add_column("target"); tbl.add_column("pass?")
+    tbl.add_column("metric")
+    tbl.add_column("value", justify="right")
+    tbl.add_column("target")
+    tbl.add_column("pass?")
     for name, target_val, val in [
         ("app_load_time_improvement_pct", report.targets.app_load_time_improvement_pct, report.kpis["app_load_time_improvement_pct"]),
         ("launch_time_improvement_pct", report.targets.launch_time_improvement_pct, report.kpis["launch_time_improvement_pct"]),

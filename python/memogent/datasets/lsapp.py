@@ -48,7 +48,7 @@ def load_lsapp_tsv(path: str | Path, user_id: str | None = None) -> Iterator[App
         # find column indexes robustly (order differs between mirrors)
         idx = {col: header.index(col) for col in header}
         col_user = idx.get("user_id", 0)
-        col_sess = idx.get("session_id", 1)
+        _col_sess = idx.get("session_id", 1)  # noqa: F841
         col_ts = idx.get("timestamp", 2)
         col_app = idx.get("app_name", 3)
         col_ev = idx.get("event_type", 4)

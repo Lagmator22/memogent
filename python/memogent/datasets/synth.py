@@ -8,7 +8,7 @@ needs to prove.
 from __future__ import annotations
 
 import random
-from typing import Iterator, List
+from typing import List
 
 from ..types import AppEvent, EventType
 

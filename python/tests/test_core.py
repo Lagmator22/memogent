@@ -2,19 +2,15 @@
 from __future__ import annotations
 
 from memogent import AppEvent, Config, Orchestrator, EventType
-from memogent.bench import KpiTargets, run_harness
+from memogent.bench import run_harness
 from memogent.cache import (
     ARCCache,
     ContextARCCache,
-    LFUCache,
     LRUCache,
     make_cache,
 )
 from memogent.datasets import generate_synthetic
 from memogent.predictor import (
-    FreqRecencyPredictor,
-    MFUPredictor,
-    MRUPredictor,
     MarkovPredictor,
     make_predictor,
 )
@@ -40,7 +36,9 @@ def test_cache_factories():
 
 def test_lru_eviction():
     c = LRUCache(2)
-    c.put("a", b"1"); c.put("b", b"2"); c.put("c", b"3")
+    c.put("a", b"1")
+    c.put("b", b"2")
+    c.put("c", b"3")
     assert c.get("a") is None
     assert c.get("b") == b"2"
     assert c.stats().evictions == 1
@@ -79,7 +77,8 @@ def test_orchestrator_basic():
     cfg = Config(predictor="markov1", cache_policy="context_arc", cache_capacity_app=16)
     o = Orchestrator(cfg)
     for a, b in (("x", "y"), ("y", "z"), ("z", "x")) * 10:
-        o.record_app_open(a); o.record_app_open(b)
+        o.record_app_open(a)
+        o.record_app_open(b)
         o.tick()
     preds = o.predict_next(3)
     assert preds and preds[0].score > 0
