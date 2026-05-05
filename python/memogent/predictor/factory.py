@@ -5,6 +5,7 @@ from ..config import Config
 from .base import Predictor
 from .freq_recency import FreqRecencyPredictor
 from .markov import MarkovPredictor
+from .markov_bigram import MarkovBigramPredictor
 from .most_frequent import MFUPredictor
 from .most_recent import MRUPredictor
 
@@ -17,6 +18,8 @@ def make_predictor(cfg: Config) -> Predictor:
         return MRUPredictor()
     if name in ("markov", "markov1"):
         return MarkovPredictor()
+    if name in ("markov2", "markov_bigram", "bigram"):
+        return MarkovBigramPredictor()
     if name in ("freq_recency", "freqrecency"):
         return FreqRecencyPredictor()
     raise ValueError(f"unknown predictor: {cfg.predictor}")

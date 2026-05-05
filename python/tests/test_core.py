@@ -11,6 +11,7 @@ from memogent.cache import (
 )
 from memogent.datasets import generate_synthetic
 from memogent.predictor import (
+    MarkovBigramPredictor,
     MarkovPredictor,
     make_predictor,
 )
@@ -22,7 +23,7 @@ def test_version_string():
 
 
 def test_predictor_factories():
-    for p in ("mfu", "mru", "markov1", "freq_recency"):
+    for p in ("mfu", "mru", "markov1", "freq_recency", "markov2"):
         cfg = Config(predictor=p)
         assert make_predictor(cfg).name == p if p != "markov" else "markov1"
 
@@ -71,6 +72,40 @@ def test_markov_predicts_sequence():
     preds = p.predict(1)
     # after observing sequences, the next after 'c' should be 'a' usually
     assert preds and preds[0].app_id in {"a", "b", "c"}
+
+
+def test_markov_bigram_learns_two_step_context():
+    p = MarkovBigramPredictor()
+    # Two interleaved routines: a->b->c and x->y->z
+    for _ in range(8):
+        for app in ("a", "b", "c"):
+            p.observe(AppEvent(type=EventType.APP_OPEN, app_id=app))
+        for app in ("x", "y", "z"):
+            p.observe(AppEvent(type=EventType.APP_OPEN, app_id=app))
+    # After observing (..., a, b) the bigram model should pick c first.
+    p.observe(AppEvent(type=EventType.APP_OPEN, app_id="a"))
+    p.observe(AppEvent(type=EventType.APP_OPEN, app_id="b"))
+    preds = p.predict(1)
+    assert preds[0].app_id == "c"
+
+
+def test_context_arc_pre_warm_top1_only():
+    """Cold pre-warm fires for the highest-confidence prediction only."""
+    from memogent.types import Prediction
+
+    c = ContextARCCache(2)
+    c.put("hot", b"x")
+    c.get("hot")  # promote into T2
+    # Two cold predictions; only the top one (above threshold) should land.
+    c.hint_future([
+        Prediction(app_id="cold_top", score=0.9),
+        Prediction(app_id="cold_low", score=0.05),
+        Prediction(app_id="cold_low2", score=0.04),
+    ])
+    # Pre-warm puts 'cold_top' into the cache; 'cold_low*' must remain cold.
+    assert c.get("cold_top") is not None
+    assert c.get("cold_low") is None
+    assert c.get("cold_low2") is None
 
 
 def test_orchestrator_basic():
