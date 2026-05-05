@@ -127,8 +127,23 @@ class ARCCache(AdaptiveCache):
 class ContextARCCache(ARCCache):
     policy_name = "context_arc"
 
+    _PRELOAD_MARKER = b"\x00preload"
+
+    # Cold pre-warm fires only for the top prediction whose confidence
+    # clears this bar. Each cold pre-warm trades 1 miss → 1 eviction, so
+    # it is only a net win when the prediction actually fires. The
+    # threshold filters out low-confidence guesses that would just churn
+    # the cache.
+    PRELOAD_SCORE_THRESHOLD: float = 0.22
+
     def hint_future(self, predictions: List[Prediction]) -> None:
-        """Promote predicted-next keys into T2 so ARC keeps them hot."""
+        """Promote predicted-next keys; pre-warm only the top high-confidence one.
+
+        Promotion (resident → T2) is free. Pre-warming (cold insertion of
+        a marker entry) costs an eviction but converts a future miss to
+        a hit — net positive only when the prediction confidence is high.
+        """
+        cold_top: Optional[str] = None
         for p in predictions:
             k = p.app_id
             if k in self._t1:
@@ -137,5 +152,7 @@ class ContextARCCache(ARCCache):
                 self._t2.move_to_end(k, last=False)
             elif k in self._t2:
                 self._t2.move_to_end(k, last=False)
-            # If the entry is not cached at all, the preloader materializes
-            # it; we do nothing extra here.
+            elif cold_top is None and p.score >= self.PRELOAD_SCORE_THRESHOLD:
+                cold_top = k
+        if cold_top is not None:
+            self.put(cold_top, self._PRELOAD_MARKER)

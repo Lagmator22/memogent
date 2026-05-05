@@ -39,6 +39,17 @@ def cli(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--trace", default=None)
     p.add_argument("--epochs", type=int, default=5)
 
+    p = sub.add_parser(
+        "watch",
+        help="(macOS) live-watch your frontmost app and predict the next one",
+    )
+    p.add_argument("--interval", type=float, default=2.0,
+                   help="seconds between samples")
+    p.add_argument("--state", default=str(Path.home() / ".memogent" / "watch.json"),
+                   help="path to persisted predictor state (defaults to ~/.memogent/watch.json)")
+    p.add_argument("--predictor", default="markov2")
+    p.add_argument("--cap", type=int, default=12)
+
     args = parser.parse_args(argv)
     if not args.cmd:
         parser.print_help()
@@ -50,6 +61,8 @@ def cli(argv: Optional[list[str]] = None) -> int:
         return _cmd_bench(args)
     if args.cmd == "train":
         return _cmd_train(args)
+    if args.cmd == "watch":
+        return _cmd_watch(args)
     return 0
 
 
@@ -135,6 +148,127 @@ def _cmd_train(args) -> int:
         return 2
     console.print("[yellow]LSTM training is a stub in v0.1 — see docs/PREDICTOR_DESIGN.md[/yellow]")
     return 0
+
+
+def _cmd_watch(args) -> int:
+    """Live-watch the macOS frontmost app, learn from sequences,
+    and predict the next app you're likely to switch to.
+
+    Persists the predictor's accumulated counts to disk so each session
+    builds on the last — practical personal use, not a benchmark.
+    """
+    import json as _json
+    import platform
+    import subprocess
+    import time as _time
+    from datetime import datetime
+
+    from rich.live import Live
+
+    from ..predictor import make_predictor
+    from ..config import Config
+    from ..types import AppEvent, EventType
+
+    if platform.system() != "Darwin":
+        console.print("[red]`mem watch` currently uses macOS AppleScript to read the frontmost app.[/red]")
+        return 2
+
+    state_path = Path(args.state).expanduser()
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+
+    predictor = make_predictor(Config(predictor=args.predictor))
+    history: list[tuple[float, str]] = []
+    if state_path.exists():
+        try:
+            saved = _json.loads(state_path.read_text())
+            for ts, app in saved.get("history", [])[-2000:]:
+                ev = AppEvent(
+                    type=EventType.APP_OPEN, app_id=app, timestamp=ts,
+                    hour_of_day=datetime.fromtimestamp(ts).hour,
+                )
+                predictor.observe(ev)
+                history.append((ts, app))
+            console.print(f"[dim]restored {len(history)} events from {state_path}[/dim]")
+        except (OSError, ValueError):
+            pass
+
+    last_app: str = ""
+    n_predictions = 0
+    n_top1_hits = 0
+    n_top3_hits = 0
+    pending_preds: list[str] = []
+
+    def _frontmost() -> str:
+        try:
+            out = subprocess.run(
+                ["osascript", "-e",
+                 'tell application "System Events" to get name of first process whose frontmost is true'],
+                capture_output=True, text=True, timeout=2.0,
+            )
+            return out.stdout.strip() or ""
+        except (subprocess.SubprocessError, OSError):
+            return ""
+
+    def _render() -> Table:
+        tbl = Table(title="mem watch — live next-app prediction", show_lines=False)
+        tbl.add_column("field")
+        tbl.add_column("value")
+        preds = predictor.predict(3)
+        tbl.add_row("current",       f"[bold]{last_app or '(detecting…)'}[/bold]")
+        tbl.add_row("next likely",   ", ".join(p.app_id for p in preds) if preds else "(learning…)")
+        if n_predictions:
+            tbl.add_row("top-1 acc",  f"{n_top1_hits / n_predictions:.0%}  ({n_top1_hits}/{n_predictions})")
+            tbl.add_row("top-3 acc",  f"{n_top3_hits / n_predictions:.0%}  ({n_top3_hits}/{n_predictions})")
+        tbl.add_row("history",       f"{len(history)} events")
+        tbl.add_row("state file",    str(state_path))
+        return tbl
+
+    console.print(
+        Panel.fit(
+            f"watching frontmost app every {args.interval:.1f}s · predictor={args.predictor}\n"
+            f"state persisted to {state_path}\n"
+            "[dim]Ctrl-C to exit (state is saved)[/dim]",
+            title="mem watch",
+        )
+    )
+
+    try:
+        with Live(_render(), console=console, refresh_per_second=2) as live:
+            while True:
+                cur = _frontmost()
+                if cur and cur != last_app:
+                    # Score current pending predictions against the new switch.
+                    if pending_preds:
+                        n_predictions += 1
+                        if pending_preds[0] == cur:
+                            n_top1_hits += 1
+                        if cur in pending_preds:
+                            n_top3_hits += 1
+                    ts = _time.time()
+                    ev = AppEvent(
+                        type=EventType.APP_OPEN, app_id=cur, timestamp=ts,
+                        hour_of_day=datetime.fromtimestamp(ts).hour,
+                    )
+                    predictor.observe(ev)
+                    history.append((ts, cur))
+                    pending_preds = [p.app_id for p in predictor.predict(3)]
+                    last_app = cur
+                    live.update(_render())
+                else:
+                    live.update(_render())
+                _time.sleep(args.interval)
+    except KeyboardInterrupt:
+        try:
+            state_path.write_text(_json.dumps({
+                "history": history[-2000:],
+                "predictor": args.predictor,
+            }))
+            console.print(f"\n[green]saved {len(history)} events to {state_path}[/green]")
+        except OSError as exc:
+            console.print(f"\n[red]failed to save state:[/red] {exc}")
+        return 0
+
+
 
 
 if __name__ == "__main__":
