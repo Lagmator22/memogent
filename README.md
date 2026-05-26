@@ -85,7 +85,7 @@ cd python && make install && make bench # trains predictors, replays trace, emit
 
 ```
               +-------------------------------------------------+
-              |                 YOUR APP (iOS / Android)        |
+              |              YOUR APP (iOS / Android)           |
               +----------+----------------+---------------------+
                          | Swift          | Kotlin (JNI)
                          v                v
