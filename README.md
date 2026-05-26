@@ -290,15 +290,15 @@ See [`docs/SECURITY.md`](docs/SECURITY.md) for the threat model.
 
 ## Roadmap
 
-- ✅ Core + predictor + adaptive cache + orchestrator + KPI harness.
-- ✅ Python reference parity.
-- ✅ iOS Swift Package and Android AAR build recipes.
-- 🔜 LSTM / Transformer predictor checkpoints (tiny) released as assets.
-- 🔜 Direct `llama.cpp` integration (mobile-native LLM backend).
-- 🔜 ONNX Runtime / LiteRT embedder.
-- 🔜 TD3 RL arbiter (offline-trained on LSApp).
-- 🔜 Real-device power numbers on Pixel 8 + iPhone 15 Pro.
-- 🔜 Flutter + React Native + Rust bindings (the C ABI supports them today).
+- [x] Core + predictor + adaptive cache + orchestrator + KPI harness.
+- [x] Python reference parity.
+- [x]iOS Swift Package and Android AAR build recipes.
+- [ ] LSTM / Transformer predictor checkpoints (tiny) released as assets.
+- [ ] Direct `llama.cpp` integration (mobile-native LLM backend).
+- [ ] ONNX Runtime / LiteRT embedder.
+- [ ] TD3 RL arbiter (offline-trained on LSApp).
+- [ ] Real-device power numbers on Pixel 8 + iPhone 15 Pro.
+- [ ] Flutter + React Native + Rust bindings (the C ABI supports them today).
 
 See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full plan.
 
@@ -330,5 +330,3 @@ Internal inspirations:
 MIT — see [`LICENSE`](LICENSE).
 
 ---
-
-<sub>Built for Samsung ennovateX AX Hackathon 2026, Problem Statement #3 — and engineered to outlive the hackathon in real production apps.</sub>
