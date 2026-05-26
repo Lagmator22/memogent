@@ -292,7 +292,7 @@ See [`docs/SECURITY.md`](docs/SECURITY.md) for the threat model.
 
 - [x] Core + predictor + adaptive cache + orchestrator + KPI harness.
 - [x] Python reference parity.
-- [x]iOS Swift Package and Android AAR build recipes.
+- [x] iOS Swift Package and Android AAR build recipes.
 - [ ] LSTM / Transformer predictor checkpoints (tiny) released as assets.
 - [ ] Direct `llama.cpp` integration (mobile-native LLM backend).
 - [ ] ONNX Runtime / LiteRT embedder.
