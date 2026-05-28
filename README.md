@@ -22,7 +22,7 @@ Memogent is a **cross-platform framework that makes mobile AI feel instant.** It
 - Which one to preload next because the user is about to need it.
 - Which one to evict, swap to cold storage, or recompute.
 
-The framework is **context-aware** — it learns per-user app sequences, time-of-day rhythms, location cues, and LLM salience signals — and **adaptive** — it degrades gracefully under battery / thermal / RAM pressure instead of crashing.
+The framework is **context-aware**, it learns per-user app sequences, time-of-day rhythms, location cues, and LLM salience signals ,and **adaptive** — it degrades gracefully under battery / thermal / RAM pressure instead of crashing.
 
 It is designed to ship in real products. One C++23 core is consumed by iOS via a Swift Package, by Android via an AAR, by Flutter / React Native / Rust via a stable C ABI, and by Python for research and benchmarking. Every module hides behind a pure-virtual port so you can swap models, caches, and storage backends without touching the app.
 
@@ -51,7 +51,7 @@ It is designed to ship in real products. One C++23 core is consumed by iOS via a
 
 ## Why this exists
 
-Modern phones run several AI workloads concurrently — LLM for the assistant, vision for the camera, speech for dictation, plus classic apps fighting for RAM. Today, these systems:
+Modern phones run several AI workloads concurrently, LLM for the assistant, vision for the camera, speech for dictation, plus classic apps fighting for RAM. Today, these systems:
 
 - Allocate RAM with coarse OS heuristics (LRU, LowMemoryKiller) that know nothing about user intent.
 - Never preload the next likely app or model, so every switch costs a full cold start.
@@ -60,11 +60,11 @@ Modern phones run several AI workloads concurrently — LLM for the assistant, v
 
 Memogent fixes all four. It ships with a next-context predictor, a plug-in adaptive cache with four policies (LRU, LFU, ARC, ContextARC), an LLM-aware KV-cache manager, a multi-model swap manager, a predictive preloader, and a heuristic + RL-ready memory arbiter — all stitched together by a telemetry layer that automatically reports the exact KPIs a hackathon judge or product manager cares about.
 
-## Samsung AX Hackathon 2026 · Problem #3 alignment
+## Problem alignment
 
-This project directly targets Problem Statement #3: **Context-Aware, Adaptive Memory Solution for Mobile Agentic Systems**. Every Samsung-listed KPI is baked into the benchmark harness as an automated assertion, not a slide claim:
+**Context-Aware, Adaptive Memory Solution for Mobile Agentic Systems**. Every Samsung-listed KPI is baked into the benchmark harness as an automated assertion, not a slide claim:
 
-| KPI (Samsung brief) | Target | Measured by | Module in this repo |
+| KPI | Target | Measured by | Module in this repo |
 |---|---:|---|---|
 | Application Load Time Improvement | ≥20% | Mean cold-start delta on replayed Android trace vs baseline | `bench/harness.py` + `Preloader` |
 | App Launch Time Improvement | ≥10% | Median first-frame-to-interactive delta | `bench/harness.py` + `Preloader` |
@@ -156,7 +156,7 @@ memogent/
 └── .github/workflows/                   ← CI: Linux, macOS, iOS, Android, Python
 ```
 
-## Quick start — Python reference
+## Quick start: Python reference
 
 ```bash
 cd python
@@ -169,7 +169,7 @@ make test               # pytest suite
 
 No model download is required. The Python runtime ships with deterministic baselines so the KPI harness runs green on any laptop.
 
-## Quick start — C++ core
+## Quick start: C++ core
 
 ```bash
 mkdir -p build && cd build
