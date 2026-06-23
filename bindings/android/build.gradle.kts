@@ -60,7 +60,7 @@ dependencies {
     implementation("androidx.annotation:annotation:1.7.1")
     implementation("androidx.core:core-ktx:1.12.0")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
 }
 
 publishing {
