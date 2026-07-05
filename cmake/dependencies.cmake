@@ -22,11 +22,11 @@ CPMAddPackage(
     OPTIONS "JSON_BuildTests OFF")
 
 # fmt / spdlog
-CPMAddPackage("gh:fmtlib/fmt#10.2.1")
+CPMAddPackage("gh:fmtlib/fmt#11.1.4")
 CPMAddPackage(
     NAME spdlog
     GITHUB_REPOSITORY gabime/spdlog
-    VERSION 1.13.0
+    VERSION 1.15.3
     OPTIONS "SPDLOG_FMT_EXTERNAL ON")
 
 # Catch2 tests

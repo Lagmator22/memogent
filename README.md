@@ -28,6 +28,8 @@ It is designed to ship in real products. One C++23 core is consumed by iOS via a
 
 ---
 
+> New here? [docs/PLAIN_GUIDE.md](docs/PLAIN_GUIDE.md) explains the whole codebase in plain language.
+
 ## Table of contents
 
 - [Why this exists](#why-this-exists)
